@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>返现管理 - 订单返现明细</title>
+  <!-- 引入外部资源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',      // 主色调：蓝色
+            success: '#00B42A',      // 成功色：绿色
+            danger: '#F53F3F',       // 危险色：红色
+            warning: '#FF7D00',      // 警告色：橙色
+            neutral: {
+              100: '#F5F7FA',        // 背景色
+              200: '#E5E6EB',        // 边框色
+              300: '#C9CDD4',        // 禁用色
+              400: '#86909C',        // 次要文字
+              500: '#4E5969',        // 正文文字
+              600: '#1D2129',        // 标题文字
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            title: ['"Noto Sans SC"', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+            'hover': '0 4px 16px rgba(0, 0, 0, 0.12)'
+          }
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .nav-active {
+        @apply bg-primary text-white;
+      }
+      .btn-effect {
+        @apply transition-all duration-200 hover:shadow-md active:scale-95;
+      }
+      .table-row-hover {
+        @apply transition-colors duration-200 hover:bg-neutral-100;
+      }
+      .badge {
+        @apply px-2 py-0.5 rounded-full text-xs font-medium;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-neutral-100 font-sans text-neutral-500 min-h-screen flex flex-col">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white border-b border-neutral-200 shadow-sm">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <!-- 品牌标识 -->
+        <div class="flex items-center">
+          <div class="flex-shrink-0 font-title font-bold text-xl text-neutral-600 flex items-center">
+            <i class="fa fa-link text-primary mr-2"></i>
+            <span>ONETOUCH</span>
+          </div>
+          
+          <!-- 主导航链接 -->
+          <nav class="hidden md:ml-8 md:flex md:space-x-1">
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              首页
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              服务管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              客户管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              订单管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium nav-active rounded-sm">
+              返现管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              报表管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              文档管理
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors duration-200">
+              系统管理
+            </a>
+          </nav>
+        </div>
+        
+        <!-- 右侧用户区域 -->
+        <div class="flex items-center space-x-4">
+          <button class="text-neutral-500 hover:text-primary relative p-1 btn-effect">
+            <i class="fa fa-bell-o"></i>
+            <span class="absolute top-0 right-0 w-2 h-2 bg-danger rounded-full"></span>
+          </button>
+          
+          <div class="flex items-center space-x-2">
+            <span class="text-sm">中文</span>
+            <span>/</span>
+            <span class="text-sm text-neutral-400">English</span>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <img src="https://picsum.photos/id/1005/200/200" alt="用户头像" class="w-7 h-7 rounded-full object-cover border border-neutral-200">
+            <div class="text-sm flex items-center">
+              <span>张管理员</span>
+              <i class="fa fa-angle-down ml-1 text-neutral-400"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="flex-grow container mx-auto px-4 py-6">
+    <!-- 页面标题 -->
+    <!-- <div class="mb-6">
+      <h1 class="text-[clamp(1.25rem,2vw,1.5rem)] font-title font-semibold text-neutral-600">订单返现明细</h1>
+      <p class="text-sm text-neutral-400 mt-1">管理所有订单的返现记录，支持新增、编辑和删除操作</p>
+    </div> -->
+    
+    <!-- 检索条件区 -->
+    <div class="bg-white rounded-lg shadow-card p-4 mb-6 border border-neutral-200">
+      <form id="searchForm" class="flex flex-wrap gap-4 items-center">
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="orderNumber" class="text-sm mr-2 whitespace-nowrap">订单号：</label>
+          <input type="text" id="orderNumber" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="请输入订单号">
+        </div>
+        
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="referenceNumber" class="text-sm mr-2 whitespace-nowrap">参考号：</label>
+          <input type="text" id="referenceNumber" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="请输入参考号">
+        </div>
+        
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="trackingNumber" class="text-sm mr-2 whitespace-nowrap">跟踪号：</label>
+          <input type="text" id="trackingNumber" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="请输入跟踪号">
+        </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="rebateType" class="text-sm mr-2 whitespace-nowrap">运输方式：</label>
+          <select id="rebateType" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            <option value="">全部</option>
+            <option value="运输方式1">运输方式1</option>
+          </select>
+        </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="rebateType" class="text-sm mr-2 whitespace-nowrap">返现类型：</label>
+          <select id="rebateType" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            <option value="">全部</option>
+            <option value="超长">超长</option>
+            <option value="超重">超重</option>
+            <option value="超长超大">超长超大</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="customerCode" class="text-sm mr-2 whitespace-nowrap">客户代码：</label>
+          <div id="customerCodeContainer" class="relative w-full sm:w-40">
+            <!-- 下拉选择器触发按钮 -->
+            <div id="customerCodeTrigger" class="border border-neutral-200 rounded-md px-3 py-2 text-sm flex justify-between items-center w-full focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer">
+              <span>全部</span>
+              <i class="fas fa-chevron-down text-neutral-400 text-xs"></i>
+            </div>
+            <!-- 下拉菜单 -->
+            <div id="customerCodeDropdown" class="absolute top-full left-0 right-0 mt-1 border border-neutral-200 rounded-md bg-white shadow-lg z-10 max-h-60 overflow-y-auto hidden">
+              <div class="p-2">
+                <!-- 全部选项 -->
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" id="customerCodeAll" class="text-primary focus:ring-primary rounded-sm" checked>
+                  <span class="ml-2">全部</span>
+                </label>
+                <!-- 分隔线 -->
+                <div class="border-t border-neutral-200 my-1"></div>
+                <!-- 客户选项 -->
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="customerCode" value="C001" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户A</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="customerCode" value="C002" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户B</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="customerCode" value="C003" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户C</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="customerCode" value="C004" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户D</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="customerCode" value="C005" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户E</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+      <div class="flex items-center w-full sm:w-auto">
+          <label class="text-sm mr-2 whitespace-nowrap">下单时间：</label>
+          <div class="flex gap-2">
+            <input type="date" id="orderStartTime" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-36 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            
+            <input type="date" id="orderEndTime" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-36 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+          </div>
+        </div>
+        
+        <div class="flex items-center w-full sm:w-auto">
+          <label class="text-sm mr-2 whitespace-nowrap">发货时间：</label>
+          <div class="flex gap-2">
+            <input type="date" id="shipStartTime" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-36 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            
+            <input type="date" id="shipEndTime" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-36 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+          </div>
+        </div>
+          <button type="button" id="queryBtn" class="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center btn-effect">
+            <i class="fas fa-search mr-1.5"></i> 查询
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- 数据表格区 -->
+    <div class="bg-white rounded-lg shadow-card border border-neutral-200 overflow-hidden">
+      <!-- 功能按钮栏 -->
+      <div class="p-4 border-b border-neutral-200 flex flex-wrap gap-3 items-center">
+        <button id="addBtn" class="bg-success text-white px-4 py-2 rounded-md text-sm flex items-center btn-effect">
+          <i class="fas fa-plus mr-1.5"></i> 新增
+        </button>
+        <button id="batchExportBtn" class="bg-neutral-100 text-neutral-600 px-4 py-2 rounded-md text-sm flex items-center btn-effect">
+          <i class="fas fa-download mr-1.5"></i> 批量导出
+        </button>
+      </div>
+      
+      <!-- 表格区 -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-neutral-100 text-neutral-600">
+              <th class="py-3 px-4 text-left w-10"><input type="checkbox" id="selectAll" class="rounded text-primary focus:ring-primary"></th>
+              <th class="py-3 px-4 text-left">返现类型</th>
+              <th class="py-3 px-4 text-left">客户代码</th>
+              <th class="py-3 px-4 text-left">返现金额（USD）</th>
+              <th class="py-3 px-4 text-left">订单号</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">跟踪号</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">参考号</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">运输方式</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">下单时间</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">发货时间</th>
+              <th class="py-3 px-4 text-left hidden md:table-cell">创建人</th>
+              <th class="py-3 px-4 text-left hidden lg:table-cell">创建时间</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- 表格行 -->
+            <tr class="border-t border-neutral-200 table-row-hover">
+              <td class="py-3 px-4"><input type="checkbox" class="row-check rounded text-primary focus:ring-primary"></td>
+              <td class="py-3 px-4"><span class="badge bg-primary/10 text-primary">超长</span></td>
+              <td class="py-3 px-4">demo</td>
+              <td class="py-3 px-4 font-medium">100.00</td>
+              <td class="py-3 px-4">DEMO-ORCLB5VMFJWWX</td>
+              <td class="py-3 px-4 hidden md:table-cell">TRK-789012345</td>
+              <td class="py-3 px-4 hidden md:table-cell">REF-2025-0001</td>
+              <td class="py-3 px-4 hidden md:table-cell">Fedex-HomeGround</td>
+              <td class="py-3 px-4 hidden md:table-cell">2025-09-15</td>
+              <td class="py-3 px-4 hidden md:table-cell">2025-09-20</td>
+              <td class="py-3 px-4 hidden md:table-cell">管理员</td>
+              <td class="py-3 px-4 hidden lg:table-cell">2025-10-10</td>
+            </tr>
+            <tr class="border-t border-neutral-200 table-row-hover">
+              <td class="py-3 px-4"><input type="checkbox" class="row-check rounded text-primary focus:ring-primary"></td>
+              <td class="py-3 px-4"><span class="badge bg-warning/10 text-warning">超重</span></td>
+              <td class="py-3 px-4">demo</td>
+              <td class="py-3 px-4 font-medium">200.50</td>
+              <td class="py-3 px-4">DEMO-ORCLB5VMFJWWX1</td>
+              <td class="py-3 px-4 hidden md:table-cell">TRK-789012346</td>
+              <td class="py-3 px-4 hidden md:table-cell">REF-2025-0002</td>
+              <td class="py-3 px-4 hidden md:table-cell">Fedex-HomeGround</td>
+              <td class="py-3 px-4 hidden md:table-cell">2025-09-10</td>
+              <td class="py-3 px-4 hidden md:table-cell">2025-09-18</td>
+              <td class="py-3 px-4 hidden md:table-cell">操作员</td>
+              <td class="py-3 px-4 hidden lg:table-cell">2025-10-09</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 空状态（默认隐藏） -->
+      <div id="emptyState" class="py-16 flex flex-col items-center justify-center hidden">
+        <div class="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-file-invoice-dollar text-4xl text-neutral-300"></i>
+        </div>
+        <p class="text-neutral-400">暂无返现记录</p>
+      </div>
+      
+      <!-- 分页区 -->
+      <div class="px-4 py-3 border-t border-neutral-200 flex flex-col sm:flex-row justify-between items-center text-sm">
+        <div class="text-neutral-500 mb-3 sm:mb-0">
+          显示 1-2 条，共 <span class="text-neutral-600 font-medium">2</span> 条
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-neutral-200 text-neutral-300 cursor-not-allowed" disabled>
+            <i class="fas fa-angle-left text-xs"></i>
+          </button>
+          <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white">1</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-neutral-200 hover:border-primary hover:text-primary btn-effect">2</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-neutral-200 hover:border-primary hover:text-primary btn-effect">
+            <i class="fas fa-angle-right text-xs"></i>
+          </button>
+          <span class="mx-2 text-neutral-500">每页</span>
+          <select id="pageSize" class="border border-neutral-200 rounded px-2 py-1.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            <option value="5" selected>5条</option>
+            <option value="10">10条</option>
+            <option value="20">20条</option>
+            <option value="300">300条</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 查询弹窗 -->
+  <div id="queryModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 transform scale-95 transition-all duration-300">
+      <div class="p-5 border-b border-neutral-200 flex justify-between items-center">
+        <h2 class="text-lg font-title font-semibold text-neutral-600">新增返现</h2>
+        <button id="closeAddModal" class="text-neutral-400 hover:text-neutral-600 p-1 btn-effect">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="p-5">
+        <div class="mb-5">
+          <label class="block text-sm text-neutral-600 mb-1.5"><span class="text-danger">*</span>日期范围</label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="w-full sm:w-1/2">
+              <input type="date" id="startDate" 
+                    class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
+                    required>
+              <label for="startDate" class="text-xs text-neutral-400 mt-1 block">开始日期</label>
+            </div>
+            <div class="w-full sm:w-1/2">
+              <input type="date" id="endDate" 
+                    class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
+                    required>
+              <label for="endDate" class="text-xs text-neutral-400 mt-1 block">结束日期</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-5">
+          <label for="queryRebateTypeSelect" class="block text-sm text-neutral-600 mb-1.5">返现类型</label>
+          <select id="queryRebateTypeSelect" class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" required>
+            <option value="">请选择</option>
+            <option value="超长">超长</option>
+            <option value="超重">超重</option>
+            <option value="超长超大">超长超大</option>
+          </select>
+        </div>
+        
+        <div class="mb-5">
+          <label class="block text-sm text-neutral-600 mb-1.5">客户代码</label>
+          <div id="queryCustomerCodeContainer" class="relative w-full">
+            <!-- 下拉选择器触发按钮 -->
+            <div id="queryCustomerCodeTrigger" class="border border-neutral-200 rounded-md px-3 py-2 text-sm flex justify-between items-center w-full focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer">
+              <span>请选择</span>
+              <i class="fas fa-chevron-down text-neutral-400 text-xs"></i>
+            </div>
+            <!-- 下拉菜单 -->
+            <div id="queryCustomerCodeDropdown" class="absolute top-full left-0 right-0 mt-1 border border-neutral-200 rounded-md bg-white shadow-lg z-20 max-h-60 overflow-y-auto hidden">
+              <div class="p-2">
+                <!-- 全部选项 -->
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" id="queryCustomerCodeAll" class="text-primary focus:ring-primary rounded-sm" checked>
+                  <span class="ml-2">请选择</span>
+                </label>
+                <!-- 分隔线 -->
+                <div class="border-t border-neutral-200 my-1"></div>
+                <!-- 客户选项 -->
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="queryCustomerCode" value="C001" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户A</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="queryCustomerCode" value="C002" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户B</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="queryCustomerCode" value="C003" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户C</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="queryCustomerCode" value="C004" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户D</span>
+                </label>
+                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
+                  <input type="checkbox" name="queryCustomerCode" value="C005" class="text-primary focus:ring-primary rounded-sm">
+                  <span class="ml-2">客户E</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3">
+          <button type="button" id="cancelAddBtn" class="px-4 py-2 border border-neutral-200 rounded-md text-sm btn-effect">取消</button>
+          <button type="button" id="confirmAddBtn" class="px-4 py-2 bg-primary text-white rounded-md text-sm btn-effect">
+            <span>保存</span>
+            <span class="loading hidden"><i class="fas fa-spinner fa-spin ml-1"></i></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 元素获取
+    const selectAll = document.getElementById('selectAll');
+    const rowChecks = document.querySelectorAll('.row-check');
+    const batchExportBtn = document.getElementById('batchExportBtn');
+    const searchForm = document.getElementById('searchForm');
+    const exportBtns = document.querySelectorAll('.export-btn');
+    const queryBtn = document.getElementById('queryBtn');
+    const queryModal = document.getElementById('queryModal');
+    const closeQueryModal = document.getElementById('closeQueryModal');
+    const cancelQueryBtn = document.getElementById('cancelQueryBtn');
+    const confirmQueryBtn = document.getElementById('confirmQueryBtn');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const queryRebateTypeSelect = document.getElementById('queryRebateTypeSelect');
+    const rebateType = document.getElementById('rebateType'); // 搜索表单中的返现类型下拉框
+    
+    // 设置默认日期范围（当月第一天到最后一天）
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    
+    // 设置开始日期为当月第一天
+    const firstDay = new Date(year, month, 1);
+    const formattedFirstDay = `${year}-${String(month + 1).padStart(2, '0')}-${String(firstDay.getDate()).padStart(2, '0')}`;
+    startDate.value = formattedFirstDay;
+    
+    // 设置结束日期为当月最后一天
+    const lastDay = new Date(year, month + 1, 0);
+    const formattedLastDay = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
+    endDate.value = formattedLastDay;
+    
+    // 下拉复选框功能实现
+    function initDropdownCheckbox(triggerId, dropdownId, allCheckboxId, checkboxesName) {
+      const trigger = document.getElementById(triggerId);
+      const dropdown = document.getElementById(dropdownId);
+      const allCheckbox = document.getElementById(allCheckboxId);
+      const checkboxes = document.querySelectorAll(`input[name="${checkboxesName}"]`);
+      
+      if (!trigger || !dropdown || !allCheckbox || !checkboxes.length) {
+        return;
+      }
+      
+      // 切换下拉菜单显示状态
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      });
+      
+      // 点击全选/取消全选
+      allCheckbox.addEventListener('change', () => {
+        const isChecked = allCheckbox.checked;
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = isChecked;
+        });
+        updateTriggerText();
+      });
+      
+      // 当单个选项变化时更新全选状态
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          updateAllCheckboxState();
+          updateTriggerText();
+        });
+      });
+      
+      // 更新全选框状态
+      function updateAllCheckboxState() {
+        const checkedCount = document.querySelectorAll(`input[name="${checkboxesName}"]:checked`).length;
+        allCheckbox.checked = checkedCount === checkboxes.length;
+        allCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+      }
+      
+      // 更新触发按钮文本
+      function updateTriggerText() {
+        const checkedCount = document.querySelectorAll(`input[name="${checkboxesName}"]:checked`).length;
+        if (checkedCount === 0) {
+          trigger.querySelector('span').textContent = '请选择';
+        } else if (checkedCount === checkboxes.length) {
+          trigger.querySelector('span').textContent = '全部';
+        } else if (checkedCount === 1) {
+          const checkedCheckbox = document.querySelector(`input[name="${checkboxesName}"]:checked`);
+          trigger.querySelector('span').textContent = checkedCheckbox.parentElement.querySelector('span').textContent;
+        } else {
+          trigger.querySelector('span').textContent = `${checkedCount}项已选择`;
+        }
+      }
+      
+      return { updateTriggerText };
+    }
+    
+    // 初始化两个下拉复选框
+    const searchCustomerDropdown = initDropdownCheckbox('customerCodeTrigger', 'customerCodeDropdown', 'customerCodeAll', 'customerCode');
+    const queryCustomerDropdown = initDropdownCheckbox('queryCustomerCodeTrigger', 'queryCustomerCodeDropdown', 'queryCustomerCodeAll', 'queryCustomerCode');
+    
+    // 点击页面其他地方关闭下拉菜单
+    document.addEventListener('click', () => {
+      document.querySelectorAll('#customerCodeDropdown, #queryCustomerCodeDropdown').forEach(dropdown => {
+        dropdown.classList.add('hidden');
+      });
+    });
+    
+    // 阻止下拉菜单内部点击事件冒泡
+    document.querySelectorAll('#customerCodeDropdown, #queryCustomerCodeDropdown').forEach(dropdown => {
+      dropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+    
+    // 初始化时只选中第一个客户代码
+      function initDefaultSelection() {
+        // 搜索表单中的客户代码
+        const searchCheckboxes = document.querySelectorAll('input[name="customerCode"]');
+        const searchAllCheckbox = document.getElementById('customerCodeAll');
+        if (searchCheckboxes && searchCheckboxes.length > 0 && searchAllCheckbox) {
+          // 先取消全部选择
+          searchAllCheckbox.checked = false;
+          searchAllCheckbox.indeterminate = false;
+          searchCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+          });
+          // 只选中第一个选项
+          searchCheckboxes[0].checked = true;
+          
+          // 更新触发按钮文本
+          if (searchCustomerDropdown && searchCustomerDropdown.updateTriggerText) {
+            searchCustomerDropdown.updateTriggerText();
+          }
+        }
+        
+        // 查询弹窗中的客户代码
+        const queryCheckboxes = document.querySelectorAll('input[name="queryCustomerCode"]');
+        const queryAllCheckbox = document.getElementById('queryCustomerCodeAll');
+        if (queryCheckboxes && queryCheckboxes.length > 0 && queryAllCheckbox) {
+          // 先取消全部选择
+          queryAllCheckbox.checked = false;
+          queryAllCheckbox.indeterminate = false;
+          queryCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+          });
+          // 只选中第一个选项
+          queryCheckboxes[0].checked = true;
+          
+          // 更新触发按钮文本
+          if (queryCustomerDropdown && queryCustomerDropdown.updateTriggerText) {
+            queryCustomerDropdown.updateTriggerText();
+          }
+        }
+      }
+      
+      // 初始化默认选择
+      initDefaultSelection();
+
+    // 导出按钮点击
+    exportBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        
+        // 显示加载状态
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        
+        // 模拟导出
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+          alert('已导出返现记录');
+        }, 800);
+      });
+    });
+    
+    // 处理搜索逻辑的函数，同时用于搜索表单提交和查询按钮点击
+    function handleSearch() {
+      // 模拟搜索加载
+      const originalHTML = queryBtn.innerHTML;
+      queryBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 查询';
+      queryBtn.disabled = true;
+      
+      // 获取文本搜索条件
+      const orderNumber = document.getElementById('orderNumber').value;
+      const referenceNumber = document.getElementById('referenceNumber').value;
+      const trackingNumber = document.getElementById('trackingNumber').value;
+      
+      // 获取选中的客户代码
+      const selectedCheckboxes = document.querySelectorAll('input[name="customerCode"]:checked');
+      const selectedCustomers = Array.from(selectedCheckboxes).map(checkbox => checkbox.value).join(', ');
+      
+      // 获取下单时间范围
+      const orderStartTime = document.getElementById('orderStartTime').value;
+      const orderEndTime = document.getElementById('orderEndTime').value;
+      const orderTimeRange = orderStartTime || orderEndTime ? `${orderStartTime || '不限'} 至 ${orderEndTime || '不限'}` : '不限';
+      
+      // 获取发货时间范围
+      const shipStartTime = document.getElementById('shipStartTime').value;
+      const shipEndTime = document.getElementById('shipEndTime').value;
+      const shipTimeRange = shipStartTime || shipEndTime ? `${shipStartTime || '不限'} 至 ${shipEndTime || '不限'}` : '不限';
+      
+      setTimeout(() => {
+        queryBtn.innerHTML = originalHTML;
+        queryBtn.disabled = false;
+        alert(`搜索条件：订单号=${orderNumber || '不限'}，参考号=${referenceNumber || '不限'}，跟踪号=${trackingNumber || '不限'}，返现类型=${rebateType ? rebateType.value : '不限'}，客户代码=${selectedCustomers || '全部'}，下单时间=${orderTimeRange}，发货时间=${shipTimeRange}`);
+      }, 800);
+    }
+    
+    // 查询按钮点击事件
+    if (queryBtn) {
+      queryBtn.addEventListener('click', handleSearch);
+    }
+    
+    // 搜索表单提交
+    if (searchForm) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleSearch();
+      });
+    }
+      
+    // 批量导出按钮点击
+    batchExportBtn.addEventListener('click', () => {
+      const checkedCount = document.querySelectorAll('.row-check:checked').length;
+      
+      if (checkedCount > 0) {
+        // 显示加载状态
+        const originalHTML = batchExportBtn.innerHTML;
+        batchExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> 批量导出';
+        batchExportBtn.disabled = true;
+        
+        // 模拟导出
+        setTimeout(() => {
+          batchExportBtn.innerHTML = originalHTML;
+          batchExportBtn.disabled = false;
+          alert(`已批量导出 ${checkedCount} 条返现记录`);
+        }, 1000);
+      } else {
+        alert('请先选择需要导出的记录');
+      }
+    });
+
+
+    
+    // 显示查询弹窗
+    function showQueryModal() {
+      queryModal.classList.remove('opacity-0', 'pointer-events-none');
+      queryModal.querySelector('div').classList.remove('scale-95');
+      queryModal.querySelector('div').classList.add('scale-100');
+      document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+
+    // 显示新增弹窗
+    function showAddModal() {
+      queryModal.classList.remove('opacity-0', 'pointer-events-none');
+      queryModal.querySelector('div').classList.remove('scale-95');
+      queryModal.querySelector('div').classList.add('scale-100');
+      document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+
+    // 隐藏新增弹窗
+    function hideAddModal() {
+      queryModal.classList.add('opacity-0', 'pointer-events-none');
+      queryModal.querySelector('div').classList.remove('scale-100');
+      queryModal.querySelector('div').classList.add('scale-95');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    }
+
+    // 处理新增按钮点击
+    const addBtn = document.getElementById('addBtn');
+    if (addBtn) {
+      addBtn.addEventListener('click', showAddModal);
+    }
+    
+    // 隐藏查询弹窗
+    function hideQueryModal() {
+      queryModal.classList.add('opacity-0', 'pointer-events-none');
+      queryModal.querySelector('div').classList.remove('scale-100');
+      queryModal.querySelector('div').classList.add('scale-95');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    }
+    
+    // 关闭新增弹窗
+    const closeAddModal = document.getElementById('closeAddModal');
+    const cancelAddBtn = document.getElementById('cancelAddBtn');
+    if (closeAddModal && cancelAddBtn) {
+      [closeAddModal, cancelAddBtn].forEach(btn => {
+        btn.addEventListener('click', hideAddModal);
+      });
+    }
+    
+    // 确认保存按钮点击
+    const confirmAddBtn = document.getElementById('confirmAddBtn');
+    if (confirmAddBtn) {
+      confirmAddBtn.addEventListener('click', () => {
+        // 验证日期范围
+        if (!startDate.value || !endDate.value) {
+          alert('请选择完整的日期范围');
+          return;
+        }
+        
+        // 验证开始日期不晚于结束日期
+        if (new Date(startDate.value) > new Date(endDate.value)) {
+          alert('开始日期不能晚于结束日期');
+          return;
+        }
+        
+        // 显示加载状态
+        const originalHTML = confirmAddBtn.innerHTML;
+        confirmAddBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 保存中...';
+        confirmAddBtn.disabled = true;
+        
+        // 获取选中的返现类型
+        const selectedType = queryRebateTypeSelect.value;
+        
+        // 获取选中的客户代码
+        const selectedCustomers = Array.from(document.querySelectorAll('input[name="queryCustomerCode"]:checked')).map(cb => cb.value).join(',');
+        
+        // 模拟异步请求
+        setTimeout(() => {
+          // 隐藏弹窗
+          hideAddModal();
+          
+          // 恢复按钮状态
+          confirmAddBtn.innerHTML = originalHTML;
+          confirmAddBtn.disabled = false;
+          
+          // 显示保存成功提示
+          alert(`新增返现成功！\n日期范围：${startDate.value} 至 ${endDate.value}\n返现类型：${selectedType || '全部'}\n客户代码：${selectedCustomers || '全部'}`);
+        }, 800);
+      });
+    }
+    
+    // 点击弹窗外部关闭
+    queryModal.addEventListener('click', (e) => {
+      if (e.target === queryModal) {
+        hideQueryModal();
+      }
+    });
+    
+    // 键盘ESC关闭弹窗
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!queryModal.classList.contains('pointer-events-none')) {
+          hideQueryModal();
+        }
+      }
+    });
+
+    // 初始化全选框状态
+    selectAll.indeterminate = false;
+    selectAll.checked = false;
+
+    // 全选逻辑
+    selectAll.addEventListener('change', () => {
+      rowChecks.forEach(check => {
+        check.checked = selectAll.checked;
+      });
+    });
+    
+    // 浮动按钮功能实现
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取元素
+      const logicBtn = document.getElementById('logicBtn');
+      const versionBtn = document.getElementById('versionBtn');
+      const logicModal = document.getElementById('logicModal');
+      const versionModal = document.getElementById('versionModal');
+      const closeLogicBtn = document.getElementById('closeLogicBtn');
+      const closeVersionBtn = document.getElementById('closeVersionBtn');
+      
+      // 显示逻辑说明
+      logicBtn.addEventListener('click', function() {
+        logicModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+      });
+      
+      // 显示版本记录
+      versionBtn.addEventListener('click', function() {
+        versionModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+      });
+      
+      // 关闭逻辑说明
+      closeLogicBtn.addEventListener('click', function() {
+        logicModal.classList.add('hidden');
+        document.body.style.overflow = ''; // 恢复背景滚动
+      });
+      
+      // 关闭版本记录
+      closeVersionBtn.addEventListener('click', function() {
+        versionModal.classList.add('hidden');
+        document.body.style.overflow = ''; // 恢复背景滚动
+      });
+      
+      // 点击模态框背景关闭
+      logicModal.addEventListener('click', function(e) {
+        if (e.target === logicModal) {
+          logicModal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      versionModal.addEventListener('click', function(e) {
+        if (e.target === versionModal) {
+          versionModal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // ESC键关闭模态框
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          logicModal.classList.add('hidden');
+          versionModal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  </script>
+  
+  <!-- 浮动按钮区域 -->
+  <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
+    <!-- 逻辑说明按钮 -->
+    <button id="logicBtn" class="bg-primary text-white p-4 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 transform hover:scale-105">
+      <i class="fas fa-lightbulb"></i>
+    </button>
+    
+    <!-- 版本记录按钮 -->
+    <button id="versionBtn" class="bg-neutral-700 text-white p-4 rounded-full shadow-lg hover:bg-neutral-600 transition-all duration-300 transform hover:scale-105">
+      <i class="fas fa-history"></i>
+    </button>
+  </div>
+  
+  <!-- 逻辑说明弹出层 -->
+  <div id="logicModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="p-6 border-b border-neutral-200">
+        <h3 class="text-xl font-semibold text-neutral-800">业务逻辑说明</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-4">
+          <div>
+            <h4 class="font-medium text-neutral-700 mb-2">PRD地址：PRD：https://shimo.im/file/KrkElV7DQKcaEwqJ/ 《TMS返现管理PRD.docx》，可复制链接后用石墨文档 App 打开</h4>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-neutral-50 rounded-b-lg flex justify-end">
+        <button id="closeLogicBtn" class="px-4 py-2 bg-neutral-200 hover:bg-neutral-300 rounded-md text-neutral-700 transition-colors">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 版本记录弹出层 -->
+  <div id="versionModal" class="fixed inset-0 bg-black/50 flex flex-col items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="p-6 border-b border-neutral-200">
+        <h3 class="text-xl font-semibold text-neutral-800">版本记录</h3>
+      </div>
+      <div class="p-6">
+        <div class="space-y-6">
+          <div class="border-l-4 border-primary pl-4">
+            <div class="flex justify-between items-start mb-1">
+              <h4 class="font-medium text-neutral-800">V1.2.0</h4>
+              <span class="text-xs text-neutral-500">2025-10-17</span>
+            </div>
+            <ul class="text-sm text-neutral-600 space-y-1">
+              <li>• 新增检索条件：订单号、参考号、跟踪号、运输方式</li>
+              <li>• 主表新增属性：参考号、跟踪号、运输方式</li>
+              <li>• 删除列表按钮列</li>
+
+            </ul>
+          </div>
+          <div class="border-l-4 border-neutral-300 pl-4">
+            <div class="flex justify-between items-start mb-1">
+              <h4 class="font-medium text-neutral-800">V1.1.0</h4>
+              <span class="text-xs text-neutral-500">2025-10-10</span>
+            </div>
+            <ul class="text-sm text-neutral-600 space-y-1">
+              <li>• 新增弹窗，添加’客户代码‘检索</li>
+              <li>• 主表添加’客户代码‘属性</li>
+            </ul>
+          </div>
+          
+          <div class="border-l-4 border-neutral-300 pl-4">
+            <div class="flex justify-between items-start mb-1">
+              <h4 class="font-medium text-neutral-800">V1.0.0</h4>
+              <span class="text-xs text-neutral-500">2025-10-01</span>
+            </div>
+            <ul class="text-sm text-neutral-600 space-y-1">
+              <li>• 新增原型</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-neutral-50 rounded-b-lg flex justify-end">
+        <button id="closeVersionBtn" class="px-4 py-2 bg-neutral-200 hover:bg-neutral-300 rounded-md text-neutral-700 transition-colors">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
