@@ -57,6 +57,9 @@
       .badge {
         @apply px-2 py-0.5 rounded-full text-xs font-medium;
       }
+      .border-danger {
+        @apply border-danger;
+      }
     }
   </style>
 </head>
@@ -214,6 +217,23 @@
             </div>
           </div>
         </div>
+
+         <div class="flex items-center w-full sm:w-auto">
+          <label for="rebateType" class="text-sm mr-2 whitespace-nowrap">仓库代码</label>
+          <select id="rebateType" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            <option value="">全部</option>
+            <option value="DEMO">DEMO</option>
+          </select>
+        </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="rebateType" class="text-sm mr-2 whitespace-nowrap">返现状态：</label>
+          <select id="rebateType" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+            <option value="">全部</option>
+            <option value="超长">未返现</option>
+            <option value="超重">已返现</option>
+          </select>
+        </div>
         
 
       <div class="flex items-center w-full sm:w-auto">
@@ -240,6 +260,71 @@
       </form>
     </div>
     
+    <!-- 返现弹窗 -->
+    <div id="rebateModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 transform scale-95 transition-all duration-300">
+        <div class="p-5 border-b border-neutral-200 flex justify-between items-center">
+          <h2 class="text-lg font-title font-semibold text-neutral-600">返现操作</h2>
+          <button id="closeRebateModal" class="text-neutral-400 hover:text-neutral-600 p-1 btn-effect">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="p-5">
+          <div class="mb-5">
+            <label for="rebateMonth" class="block text-sm text-neutral-600 mb-1.5"><span class="text-danger">*</span>返现月</label>
+            <input type="month" id="rebateMonth" 
+                  class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
+                  required>
+            <p id="rebateMonthError" class="error-message text-danger text-xs mt-1 hidden">请选择返现月</p>
+          </div>
+          
+          <div class="flex justify-end gap-3">
+            <button type="button" id="cancelRebateBtn" class="px-4 py-2 border border-neutral-200 rounded-md text-sm btn-effect">取消</button>
+            <button type="button" id="confirmRebateBtn" class="px-4 py-2 bg-success text-white rounded-md text-sm btn-effect">
+              <span>确定</span>
+              <span class="loading hidden"><i class="fas fa-spinner fa-spin ml-1"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 附件上传弹窗 -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 transform scale-95 transition-all duration-300">
+        <div class="p-5 border-b border-neutral-200 flex justify-between items-center">
+          <h2 class="text-lg font-title font-semibold text-neutral-600">附件上传</h2>
+          <button id="closeUploadModal" class="text-neutral-400 hover:text-neutral-600 p-1 btn-effect">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="p-5">
+          <div class="mb-5">
+            <div class="border-2 border-dashed border-neutral-300 rounded-md p-4 text-center hover:border-primary transition-colors cursor-pointer" id="uploadArea">
+              <input type="file" id="fileUpload" class="hidden" multiple accept=".xlsx,.xls,.pdf,.docx,.doc">
+              <i class="fas fa-cloud-upload-alt text-2xl text-neutral-400 mb-2"></i>
+              <p class="text-sm text-neutral-500 mb-1">点击或拖拽文件到此处上传</p>
+              <p class="text-xs text-neutral-400">支持格式：.xlsx, .xls, .pdf, .docx, .doc，单个文件不超过10MB</p>
+            </div>
+            <div id="fileList" class="mt-3 hidden">
+              <p class="text-xs text-neutral-500 mb-1">已选文件：</p>
+              <div id="selectedFiles" class="text-sm"></div>
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-3">
+            <button type="button" id="cancelUploadBtn" class="px-4 py-2 border border-neutral-200 rounded-md text-sm btn-effect">取消</button>
+            <button type="button" id="confirmUploadBtn" class="px-4 py-2 bg-primary text-white rounded-md text-sm btn-effect">
+              <span>确定上传</span>
+              <span class="loading hidden"><i class="fas fa-spinner fa-spin ml-1"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- 数据表格区 -->
     <div class="bg-white rounded-lg shadow-card border border-neutral-200 overflow-hidden">
       <!-- 功能按钮栏 -->
@@ -249,6 +334,9 @@
         </button>
         <button id="batchExportBtn" class="bg-neutral-100 text-neutral-600 px-4 py-2 rounded-md text-sm flex items-center btn-effect">
           <i class="fas fa-download mr-1.5"></i> 批量导出
+        </button>
+        <button id="batchRebateBtn" class="bg-neutral-100 text-neutral-600 px-4 py-2 rounded-md text-sm flex items-center btn-effect">
+          <i class="fas fa-undo-alt mr-1.5"></i> 批量返现
         </button>
       </div>
       
@@ -260,15 +348,17 @@
               <th class="py-3 px-4 text-left w-10"><input type="checkbox" id="selectAll" class="rounded text-primary focus:ring-primary"></th>
               <th class="py-3 px-4 text-left">返现类型</th>
               <th class="py-3 px-4 text-left">客户代码</th>
+              <th class="py-3 px-4 text-left">仓库代码</th>
               <th class="py-3 px-4 text-left">返现金额（USD）</th>
               <th class="py-3 px-4 text-left">订单号</th>
               <th class="py-3 px-4 text-left hidden md:table-cell">跟踪号</th>
               <th class="py-3 px-4 text-left hidden md:table-cell">参考号</th>
               <th class="py-3 px-4 text-left hidden md:table-cell">运输方式</th>
+              <th class="py-3 px-4 text-left hidden lg:table-cell">返现状态</th>
+              <th class="py-3 px-4 text-left hidden lg:table-cell">返现月</th>
               <th class="py-3 px-4 text-left hidden md:table-cell">下单时间</th>
               <th class="py-3 px-4 text-left hidden md:table-cell">发货时间</th>
-              <th class="py-3 px-4 text-left hidden md:table-cell">创建人</th>
-              <th class="py-3 px-4 text-left hidden lg:table-cell">创建时间</th>
+              <th class="py-3 px-4 text-left hidden lg:table-cell">操作</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -277,29 +367,37 @@
               <td class="py-3 px-4"><input type="checkbox" class="row-check rounded text-primary focus:ring-primary"></td>
               <td class="py-3 px-4"><span class="badge bg-primary/10 text-primary">超长</span></td>
               <td class="py-3 px-4">demo</td>
+              <td class="py-3 px-4">demo</td>
               <td class="py-3 px-4 font-medium">100.00</td>
               <td class="py-3 px-4">DEMO-ORCLB5VMFJWWX</td>
               <td class="py-3 px-4 hidden md:table-cell">TRK-789012345</td>
               <td class="py-3 px-4 hidden md:table-cell">REF-2025-0001</td>
               <td class="py-3 px-4 hidden md:table-cell">Fedex-HomeGround</td>
+              <td class="py-3 px-4 hidden md:table-cell">未返现</td>
+              <td class="py-3 px-4 hidden md:table-cell">-</td>
               <td class="py-3 px-4 hidden md:table-cell">2025-09-15</td>
               <td class="py-3 px-4 hidden md:table-cell">2025-09-20</td>
-              <td class="py-3 px-4 hidden md:table-cell">管理员</td>
-              <td class="py-3 px-4 hidden lg:table-cell">2025-10-10</td>
+              <td class="py-3 px-4 hidden lg:table-cell">
+                <button class="bg-warning text-white px-2 py-1 rounded-md text-sm flex items-center btn-effect">
+                  <i class="fas fa-undo-alt mr-1.5"></i> 返现
+                </button>
+              </td>
             </tr>
             <tr class="border-t border-neutral-200 table-row-hover">
               <td class="py-3 px-4"><input type="checkbox" class="row-check rounded text-primary focus:ring-primary"></td>
               <td class="py-3 px-4"><span class="badge bg-warning/10 text-warning">超重</span></td>
+              <td class="py-3 px-4">demo</td>
               <td class="py-3 px-4">demo</td>
               <td class="py-3 px-4 font-medium">200.50</td>
               <td class="py-3 px-4">DEMO-ORCLB5VMFJWWX1</td>
               <td class="py-3 px-4 hidden md:table-cell">TRK-789012346</td>
               <td class="py-3 px-4 hidden md:table-cell">REF-2025-0002</td>
               <td class="py-3 px-4 hidden md:table-cell">Fedex-HomeGround</td>
+              <td class="py-3 px-4 hidden lg:table-cell">已返现</td>
+              <td class="py-3 px-4 hidden md:table-cell">2025-09</td>
               <td class="py-3 px-4 hidden md:table-cell">2025-09-10</td>
               <td class="py-3 px-4 hidden md:table-cell">2025-09-18</td>
-              <td class="py-3 px-4 hidden md:table-cell">操作员</td>
-              <td class="py-3 px-4 hidden lg:table-cell">2025-10-09</td>
+
             </tr>
           </tbody>
         </table>
@@ -371,7 +469,7 @@
         <div class="mb-5">
           <label for="queryRebateTypeSelect" class="block text-sm text-neutral-600 mb-1.5">返现类型</label>
           <select id="queryRebateTypeSelect" class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" required>
-            <option value="">请选择</option>
+            <option value="">全部</option>
             <option value="超长">超长</option>
             <option value="超重">超重</option>
             <option value="超长超大">超长超大</option>
@@ -383,7 +481,7 @@
           <div id="queryCustomerCodeContainer" class="relative w-full">
             <!-- 下拉选择器触发按钮 -->
             <div id="queryCustomerCodeTrigger" class="border border-neutral-200 rounded-md px-3 py-2 text-sm flex justify-between items-center w-full focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer">
-              <span>请选择</span>
+              <span>全部</span>
               <i class="fas fa-chevron-down text-neutral-400 text-xs"></i>
             </div>
             <!-- 下拉菜单 -->
@@ -392,7 +490,7 @@
                 <!-- 全部选项 -->
                 <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
                   <input type="checkbox" id="queryCustomerCodeAll" class="text-primary focus:ring-primary rounded-sm" checked>
-                  <span class="ml-2">请选择</span>
+                  <span class="ml-2">全部</span>
                 </label>
                 <!-- 分隔线 -->
                 <div class="border-t border-neutral-200 my-1"></div>
@@ -438,6 +536,7 @@
     const selectAll = document.getElementById('selectAll');
     const rowChecks = document.querySelectorAll('.row-check');
     const batchExportBtn = document.getElementById('batchExportBtn');
+    const batchRebateBtn = document.getElementById('batchRebateBtn');
     const searchForm = document.getElementById('searchForm');
     const exportBtns = document.querySelectorAll('.export-btn');
     const queryBtn = document.getElementById('queryBtn');
@@ -449,6 +548,24 @@
     const endDate = document.getElementById('endDate');
     const queryRebateTypeSelect = document.getElementById('queryRebateTypeSelect');
     const rebateType = document.getElementById('rebateType'); // 搜索表单中的返现类型下拉框
+    // 返现弹窗元素
+    const rebateModal = document.getElementById('rebateModal');
+    const closeRebateModal = document.getElementById('closeRebateModal');
+    const cancelRebateBtn = document.getElementById('cancelRebateBtn');
+    const confirmRebateBtn = document.getElementById('confirmRebateBtn');
+    const rebateMonth = document.getElementById('rebateMonth');
+    const rebateMonthError = document.getElementById('rebateMonthError');
+    // 附件上传弹窗元素
+    const uploadModal = document.getElementById('uploadModal');
+    const closeUploadModal = document.getElementById('closeUploadModal');
+    const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+    const confirmUploadBtn = document.getElementById('confirmUploadBtn');
+    const rebateMonthBatch = document.getElementById('rebateMonthBatch');
+    const rebateMonthBatchError = document.getElementById('rebateMonthBatchError');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileUpload = document.getElementById('fileUpload');
+    const fileList = document.getElementById('fileList');
+    const selectedFiles = document.getElementById('selectedFiles');
     
     // 设置默认日期范围（当月第一天到最后一天）
     const now = new Date();
@@ -464,6 +581,10 @@
     const lastDay = new Date(year, month + 1, 0);
     const formattedLastDay = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
     endDate.value = formattedLastDay;
+    
+    // 设置返现月份默认值为当前月份
+    const currentMonth = `${year}-${String(month + 1).padStart(2, '0')}`;
+    rebateMonth.value = currentMonth;
     
     // 下拉复选框功能实现
     function initDropdownCheckbox(triggerId, dropdownId, allCheckboxId, checkboxesName) {
@@ -528,6 +649,101 @@
     const searchCustomerDropdown = initDropdownCheckbox('customerCodeTrigger', 'customerCodeDropdown', 'customerCodeAll', 'customerCode');
     const queryCustomerDropdown = initDropdownCheckbox('queryCustomerCodeTrigger', 'queryCustomerCodeDropdown', 'queryCustomerCodeAll', 'queryCustomerCode');
     
+    // 显示返现弹窗
+    function showRebateModal(orderInfo) {
+      rebateModal.classList.remove('opacity-0', 'pointer-events-none');
+      rebateModal.querySelector('div').classList.remove('scale-95');
+      rebateModal.querySelector('div').classList.add('scale-100');
+      document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+    
+    // 隐藏返现弹窗
+    function hideRebateModal() {
+      rebateModal.classList.add('opacity-0', 'pointer-events-none');
+      rebateModal.querySelector('div').classList.remove('scale-100');
+      rebateModal.querySelector('div').classList.add('scale-95');
+      document.body.style.overflow = ''; // 恢复背景滚动
+      // 清除错误提示
+      rebateMonthError.classList.add('hidden');
+      rebateMonth.classList.remove('border-danger');
+    }
+    
+    // 点击页面其他地方关闭下拉菜单
+    document.addEventListener('click', () => {
+      document.querySelectorAll('#customerCodeDropdown, #queryCustomerCodeDropdown').forEach(dropdown => {
+        dropdown.classList.add('hidden');
+      });
+    });
+    
+    // 为表格中的返现按钮添加点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+      // 查找包含返现文本的按钮
+      const rebateButtons = Array.from(document.querySelectorAll('button')).filter(button => 
+        button.textContent.includes('返现')
+      );
+      rebateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // 从当前行获取订单信息
+          const row = this.closest('tr');
+          if (row) {
+            const orderNumber = row.querySelector('td:nth-child(5)').textContent;
+            const typeBadge = row.querySelector('td:nth-child(2) .badge');
+            const type = typeBadge ? typeBadge.textContent : '';
+            const amount = row.querySelector('td:nth-child(4)').textContent;
+            const status = row.querySelector('td:nth-child(9)').textContent;
+            
+            // 显示返现弹窗
+            showRebateModal();
+          }
+        });
+      });
+      
+      // 为关闭按钮添加事件
+      closeRebateModal.addEventListener('click', hideRebateModal);
+      cancelRebateBtn.addEventListener('click', hideRebateModal);
+      
+      // 为确认返现按钮添加事件
+      confirmRebateBtn.addEventListener('click', function() {
+        // 验证返现月份
+        if (!rebateMonth.value) {
+          rebateMonthError.classList.remove('hidden');
+          rebateMonth.classList.add('border-danger');
+          return;
+        } else {
+          rebateMonthError.classList.add('hidden');
+          rebateMonth.classList.remove('border-danger');
+        }
+        
+        // 显示加载状态
+        const originalHTML = confirmRebateBtn.innerHTML;
+        confirmRebateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 处理中...';
+        confirmRebateBtn.disabled = true;
+        
+        // 模拟异步请求
+        setTimeout(() => {
+          // 隐藏弹窗
+          hideRebateModal();
+          
+          // 恢复按钮状态
+          confirmRebateBtn.innerHTML = originalHTML;
+          confirmRebateBtn.disabled = false;
+          
+          // 显示成功提示
+          alert(`返现操作成功！\n返现月：${rebateMonth.value}`);
+          
+          // 可以在这里添加更新表格状态的逻辑
+          // 例如将返现状态从"未返现"更新为所选月份
+        }, 800);
+      });
+      
+      // 点击弹窗外部关闭
+      rebateModal.addEventListener('click', (e) => {
+        if (e.target === rebateModal) {
+          hideRebateModal();
+        }
+      });
+    });
+    
     // 点击页面其他地方关闭下拉菜单
     document.addEventListener('click', () => {
       document.querySelectorAll('#customerCodeDropdown, #queryCustomerCodeDropdown').forEach(dropdown => {
@@ -542,8 +758,143 @@
       });
     });
     
+    // 显示附件上传弹窗
+    function showUploadModal() {
+      uploadModal.classList.remove('opacity-0', 'pointer-events-none');
+      uploadModal.querySelector('div').classList.remove('scale-95');
+      uploadModal.querySelector('div').classList.add('scale-100');
+      document.body.style.overflow = 'hidden'; // 禁止背景滚动
+      // 清空文件列表
+      fileUpload.value = '';
+      fileList.classList.add('hidden');
+      selectedFiles.innerHTML = '';
+      // 清空错误提示
+      rebateMonthBatchError.classList.add('hidden');
+      rebateMonthBatch.classList.remove('border-danger');
+    }
+    
+    // 隐藏附件上传弹窗
+    function hideUploadModal() {
+      uploadModal.classList.add('opacity-0', 'pointer-events-none');
+      uploadModal.querySelector('div').classList.remove('scale-100');
+      uploadModal.querySelector('div').classList.add('scale-95');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    }
+    
+    // 处理文件选择
+    function handleFileSelect() {
+      const files = fileUpload.files;
+      if (files.length > 0) {
+        fileList.classList.remove('hidden');
+        selectedFiles.innerHTML = '';
+        
+        Array.from(files).forEach(file => {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'flex items-center justify-between bg-neutral-50 p-2 rounded-md mb-1';
+          fileItem.innerHTML = `
+            <div class="flex items-center">
+              <i class="fas fa-file mr-2 text-neutral-400"></i>
+              <span class="truncate max-w-[200px]">${file.name}</span>
+            </div>
+            <span class="text-xs text-neutral-400">${formatFileSize(file.size)}</span>
+          `;
+          selectedFiles.appendChild(fileItem);
+        });
+      } else {
+        fileList.classList.add('hidden');
+      }
+    }
+    
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+      else return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+    
+    // 初始化批量返现功能
+    if (batchRebateBtn) {
+      // 批量返现按钮点击事件
+      batchRebateBtn.addEventListener('click', showUploadModal);
+      
+      // 上传区域点击事件
+      uploadArea.addEventListener('click', () => {
+        fileUpload.click();
+      });
+      
+      // 文件选择变化事件
+      fileUpload.addEventListener('change', handleFileSelect);
+      
+      // 拖拽上传
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('border-primary');
+      });
+      
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('border-primary');
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('border-primary');
+        if (e.dataTransfer.files.length > 0) {
+          fileUpload.files = e.dataTransfer.files;
+          handleFileSelect();
+        }
+      });
+      
+      // 关闭上传弹窗事件
+      closeUploadModal.addEventListener('click', hideUploadModal);
+      cancelUploadBtn.addEventListener('click', hideUploadModal);
+      
+      // 确认上传按钮事件
+      confirmUploadBtn.addEventListener('click', function() {
+        // 验证返现月份
+        if (!rebateMonthBatch.value) {
+          rebateMonthBatchError.classList.remove('hidden');
+          rebateMonthBatch.classList.add('border-danger');
+          return;
+        } else {
+          rebateMonthBatchError.classList.add('hidden');
+          rebateMonthBatch.classList.remove('border-danger');
+        }
+        
+        // 验证是否选择了文件
+        if (fileUpload.files.length === 0) {
+          alert('请至少上传一个附件文件');
+          return;
+        }
+        
+        // 显示加载状态
+        const originalHTML = confirmUploadBtn.innerHTML;
+        confirmUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> 上传中...';
+        confirmUploadBtn.disabled = true;
+        
+        // 模拟异步请求
+        setTimeout(() => {
+          // 隐藏弹窗
+          hideUploadModal();
+          
+          // 恢复按钮状态
+          confirmUploadBtn.innerHTML = originalHTML;
+          confirmUploadBtn.disabled = false;
+          
+          // 显示成功提示
+          alert(`批量返现操作成功！\n返现月：${rebateMonthBatch.value}\n上传文件数：${fileUpload.files.length}`);
+        }, 1000);
+      });
+      
+      // 点击上传弹窗外部关闭
+      uploadModal.addEventListener('click', (e) => {
+        if (e.target === uploadModal) {
+          hideUploadModal();
+        }
+      });
+    }
+    
     // 初始化时只选中第一个客户代码
-      function initDefaultSelection() {
+    function initDefaultSelection() {
         // 搜索表单中的客户代码
         const searchCheckboxes = document.querySelectorAll('input[name="customerCode"]');
         const searchAllCheckbox = document.getElementById('customerCodeAll');
