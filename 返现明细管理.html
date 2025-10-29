@@ -176,46 +176,7 @@
         
         <div class="flex items-center w-full sm:w-auto">
           <label for="customerCode" class="text-sm mr-2 whitespace-nowrap">客户代码：</label>
-          <div id="customerCodeContainer" class="relative w-full sm:w-40">
-            <!-- 下拉选择器触发按钮 -->
-            <div id="customerCodeTrigger" class="border border-neutral-200 rounded-md px-3 py-2 text-sm flex justify-between items-center w-full focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none cursor-pointer">
-              <span>全部</span>
-              <i class="fas fa-chevron-down text-neutral-400 text-xs"></i>
-            </div>
-            <!-- 下拉菜单 -->
-            <div id="customerCodeDropdown" class="absolute top-full left-0 right-0 mt-1 border border-neutral-200 rounded-md bg-white shadow-lg z-10 max-h-60 overflow-y-auto hidden">
-              <div class="p-2">
-                <!-- 全部选项 -->
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" id="customerCodeAll" class="text-primary focus:ring-primary rounded-sm" checked>
-                  <span class="ml-2">全部</span>
-                </label>
-                <!-- 分隔线 -->
-                <div class="border-t border-neutral-200 my-1"></div>
-                <!-- 客户选项 -->
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" name="customerCode" value="C001" class="text-primary focus:ring-primary rounded-sm">
-                  <span class="ml-2">客户A</span>
-                </label>
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" name="customerCode" value="C002" class="text-primary focus:ring-primary rounded-sm">
-                  <span class="ml-2">客户B</span>
-                </label>
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" name="customerCode" value="C003" class="text-primary focus:ring-primary rounded-sm">
-                  <span class="ml-2">客户C</span>
-                </label>
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" name="customerCode" value="C004" class="text-primary focus:ring-primary rounded-sm">
-                  <span class="ml-2">客户D</span>
-                </label>
-                <label class="inline-flex items-center w-full p-1.5 hover:bg-neutral-50 rounded">
-                  <input type="checkbox" name="customerCode" value="C005" class="text-primary focus:ring-primary rounded-sm">
-                  <span class="ml-2">客户E</span>
-                </label>
-              </div>
-            </div>
-          </div>
+          <input type="text" id="orderNumber" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-full sm:w-40 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="请输入订单号">
         </div>
 
          <div class="flex items-center w-full sm:w-auto">
@@ -439,7 +400,7 @@
             <option value="300">300条</option>
           </select>
         </div>
-      </div>
+      </div>客户代码
     </div>
   </main>
 
