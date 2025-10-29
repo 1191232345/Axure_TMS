@@ -234,6 +234,12 @@
             <option value="超重">已返现</option>
           </select>
         </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <label for="rebateType" class="text-sm mr-2 whitespace-nowrap">返现月</label>
+          <input type="date" id="orderStartTime" class="border border-neutral-200 rounded-md px-3 py-2 text-sm w-36 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
+          </select>
+        </div>
         
 
       <div class="flex items-center w-full sm:w-auto">
@@ -449,7 +455,7 @@
       
       <div class="p-5">
         <div class="mb-5">
-          <label class="block text-sm text-neutral-600 mb-1.5"><span class="text-danger">*</span>日期范围</label>
+          <label class="block text-sm text-neutral-600 mb-1.5"><span class="text-danger">*</span>上传时间</label>
           <div class="flex flex-col sm:flex-row gap-3">
             <div class="w-full sm:w-1/2">
               <input type="date" id="startDate" 
@@ -473,6 +479,24 @@
             <option value="超长">超长</option>
             <option value="超重">超重</option>
             <option value="超长超大">超长超大</option>
+          </select>
+
+        <div class="mb-4">
+          <label for="modalRebateType" class="block text-sm text-neutral-600 mb-1.5">返现方案 <span class="text-danger">*</span></label>
+          <select id="modalRebateType" class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm input-focus" required>
+            <option value="全部">全部</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label for="modalRebateType" class="block text-sm text-neutral-600 mb-1.5">运输方式 <span class="text-danger">*</span></label>
+          <select id="modalRebateType" class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm input-focus" required>
+            <option value="全部">全部</option>
+            <option value="超长">Fedex</option>
+            <option value="超重">UPS</option>
           </select>
         </div>
         
