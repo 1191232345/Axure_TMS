@@ -292,6 +292,15 @@
       
       <form id="modalForm" class="p-5">
         <input type="hidden" id="recordId">
+
+        <div class="mb-4">
+          <label for="shippingMethod" class="block text-sm text-neutral-600 mb-1.5">返现类型</label>
+          <select id="shippingMethod" class="w-full border border-neutral-200 rounded-md px-3 py-2 text-sm input-focus" required>
+            <option value="fedex_smartpost" selected>超长</option>
+            <option value="fedex_smartpost" selected>超重</option>
+            <option value="fedex_smartpost" selected>超长超大</option>
+          </select>
+        </div>
         
         <div class="mb-4">
           <label for="name" class="block text-sm text-neutral-600 mb-1.5">名称 <span class="text-danger">*</span></label>
